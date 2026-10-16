@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batik Fraktal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f6f0;
+            color: #2c221e;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0d8c8;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #8b4513;
+        }
+
+        header h1 {
+            color: #4a2c11;
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .intro-box {
+            background-color: #fdfbf7;
+            border-left: 4px solid #8b4513;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        .intro-box p {
+            color: #554133;
+            font-size: 14.5px;
+            line-height: 1.6;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #4a2c11;
+            margin-bottom: 15px;
+        }
+
+        .pattern-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .pattern-row {
+            display: flex;
+            align-items: center;
+            background: #fdfbf7;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #e6decb;
+        }
+
+        .pattern-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin-right: 10px;
+            accent-color: #8b4513;
+        }
+
+        .pattern-row label {
+            flex-grow: 1;
+            font-weight: 600;
+            font-size: 14px;
+            color: #3d2b1f;
+            cursor: pointer;
+        }
+
+        .pattern-row input[type="number"] {
+            width: 65px;
+            padding: 4px 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .pattern-row input[type="color"] {
+            width: 35px;
+            height: 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: #8b4513;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #6a340d;
+        }
+
+        .btn-secondary {
+            background-color: #d4af37;
+            color: #2c221e;
+        }
+
+        .btn-secondary:hover {
+            background-color: #b89528;
+        }
+
+        .canvas-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        canvas {
+            border: 3px solid #8b4513;
+            border-radius: 8px;
+            background-color: #fffefb;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Batik Fraktal</h1>
+        <div class="intro-box">
+            <p><strong>Apa itu Batik Fraktal?</strong><br>
+            Batik Fraktal adalah inovasi seni batik yang menggabungkan keindahan seni tradisional nusantara dengan ilmu matematika fraktal. Fraktal adalah bentuk geometri yang memiliki sifat <em>self-similarity</em> (keserupaan diri), di mana pola dasarnya akan terus berulang dan mirip dengan bentuk keseluruhannya meskipun diperbesar atau diperkecil dalam berbagai skala. Penggunaan algoritma matematika memungkinkan terciptanya variasi motif baru yang presisi, unik, dan penuh warna tanpa menghilangkan esensi estetika ragam hias batik.</p>
+        </div>
+    </header>
+
+    <main>
+        <h2 class="section-title">Pilih Motif, Ukuran Skala, dan Warna</h2>
+        
+        <div class="pattern-list">
+            <!-- Tradisional -->
+            <div class="pattern-row">
+                <input type="checkbox" class="pattern-check" data-type="kawung" id="c_kawung" checked>
+                <label for="c_kawung">Batik Kawung</label>
+                <input type="number" class="pattern-size" value="35" min="1" max="100">
+                <input type="color" class="pattern-color" value="#8b4513">
+            </div>
+
+            <div class="pattern-row">
+                <input type="checkbox" class="pattern-check" data-type="ceplok" id="c_ceplok">
+                <label for="c_ceplok">Ceplok Geometris</label>
+                <input type="number" class="pattern-size" value="30" min="1" max="100">
+                <input type="color" class="pattern-color" value="#800000">
+            </div>
+
+            <!-- Motif Fraktal Modern -->
+            <div class="pattern-row">
+                <input type="checkbox" class="pattern-check" data-type="bunga" id="c_bunga">
+                <label for="c_bunga">Pola Bunga</label>
+                <input type="number" class="pattern-size" value="25" min="1" max="100">
+                <input type="color" class="pattern-color" value="#d9534f">
+            </div>
+
+            <div class="pattern-row">
+                <input type="checkbox" class="pattern-check" data-type="geometris" id="c_geometris">
+                <label for="c_geometris">Pola Geometris</label>
+                <input type="number" class="pattern-size" value="25" min="1" max="100">
+                <input type="color" class="pattern-color" value="#2e7d32">
+            </div>
+
+            <div class="pattern-row">
+                <input type="checkbox" class="pattern-check" data-type="setengah-lingkaran" id="c_setengah">
+                <label for="c_setengah">Setengah Lingkaran</label>
+                <input type="number" class="pattern-size" value="30" min="1" max="100">
+                <input type="color" class="pattern-color" value="#e67e22">
+            </div>
+
+            <div class="pattern-row">
+                <input type="checkbox" class="pattern-check" data-type="daun" id="c_daun">
+                <label for="c_daun">Pola Daun</label>
+                <input type="number" class="pattern-size" value="25" min="1" max="100">
+                <input type="color" class="pattern-color" value="#1976d2">
+            </div>
+
+            <div class="pattern-row">
+                <input type="checkbox" class="pattern-check" data-type="titik" id="c_titik">
+                <label for="c_titik">Pola Titik</label>
+                <input type="number" class="pattern-size" value="20" min="1" max="100">
+                <input type="color" class="pattern-color" value="#6f42c1">
+            </div>
+
+            <div class="pattern-row">
+                <input type="checkbox" class="pattern-check" data-type="spiral" id="c_spiral">
+                <label for="c_spiral">Pola Spiral</label>
+                <input type="number" class="pattern-size" value="25" min="1" max="100">
+                <input type="color" class="pattern-color" value="#d32f2f">
+            </div>
+
+            <div class="pattern-row">
+                <input type="checkbox" class="pattern-check" data-type="heksagonal" id="c_heksagonal">
+                <label for="c_heksagonal">Pola Heksagonal</label>
+                <input type="number" class="pattern-size" value="25" min="1" max="100">
+                <input type="color" class="pattern-color" value="#00897b">
+            </div>
+
+            <div class="pattern-row">
+                <input type="checkbox" class="pattern-check" data-type="simetri" id="c_simetri">
+                <label for="c_simetri">Pola Simetri</label>
+                <input type="number" class="pattern-size" value="25" min="1" max="100">
+                <input type="color" class="pattern-color" value="#fbc02d">
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-primary" id="btnDraw">Gambar Motif Batik</button>
+            <button class="btn btn-secondary" id="btnSaveJpg">Simpan Sebagai JPG</button>
+        </div>
+
+        <div class="canvas-wrapper">
+            <!-- Canvas Resolusi 800x800 -->
+            <canvas id="batikCanvas" width="800" height="800"></canvas>
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('batikCanvas');
+    const ctx = canvas.getContext('2d');
+    const btnDraw = document.getElementById('btnDraw');
+    const btnSaveJpg = document.getElementById('btnSaveJpg');
+
+    btnDraw.addEventListener('click', drawBatik);
+    btnSaveJpg.addEventListener('click', saveAsJpg);
+
+    drawBatik();
+
+    function drawBatik() {
+        ctx.fillStyle = '#fffefb';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const patternRows = document.querySelectorAll('.pattern-row');
+        let selectedCount = 0;
+
+        patternRows.forEach(row => {
+            const checkbox = row.querySelector('.pattern-check');
+            if (checkbox && checkbox.checked) {
+                selectedCount++;
+                const type = checkbox.dataset.type;
+                const sizeInput = row.querySelector('.pattern-size');
+                const colorInput = row.querySelector('.pattern-color');
+
+                const size = sizeInput ? parseInt(sizeInput.value, 10) || 10 : 10;
+                const color = colorInput ? colorInput.value : '#000000';
+
+                renderPattern(type, size, color);
+            }
+        });
+
+        if (selectedCount === 0) {
+            ctx.fillStyle = '#888888';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Pilih minimal satu motif batik di atas', canvas.width / 2, canvas.height / 2);
+        }
+    }
+
+    function renderPattern(type, size, color) {
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+
+        switch (type) {
+            // Tradisional
+            case 'kawung': drawBatikKawung(size); break;
+            case 'ceplok': drawBatikCeplok(size); break;
+            // Modern / Fraktal (Full Color & Renggang)
+            case 'bunga': drawPolaBungaFull(size); break;
+            case 'geometris': drawPolaGeometrisFull(size); break;
+            case 'setengah-lingkaran': drawPolaSetengahLingkaranFull(size); break;
+            case 'daun': drawPolaDaunFull(size); break;
+            case 'titik': drawPolaTitikFull(size); break;
+            case 'spiral': drawPolaSpiralFull(size); break;
+            case 'heksagonal': drawPolaHeksagonalFull(size); break;
+            case 'simetri': drawPolaSimetriFull(size); break;
+        }
+
+        ctx.restore();
+    }
+
+    // --- 1. Batik Kawung Tradisional ---
+    function drawBatikKawung(val) {
+        const step = Math.max(30, 150 - val * 1.3);
+        const r = step / 2;
+        ctx.lineWidth = 1.5;
+
+        for (let x = 0; x <= canvas.width + step; x += step) {
+            for (let y = 0; y <= canvas.height + step; y += step) {
+                for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 2) {
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(angle);
+                    ctx.beginPath();
+                    ctx.ellipse(r / 2, 0, r / 2, r / 4, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(r / 2, 0, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+    }
+
+    // --- 2. Batik Ceplok Geometris Tradisional ---
+    function drawBatikCeplok(val) {
+        const step = Math.max(35, 160 - val * 1.3);
+        ctx.lineWidth = 1.5;
+
+        for (let x = step / 2; x <= canvas.width + step; x += step) {
+            for (let y = step / 2; y <= canvas.height + step; y += step) {
+                ctx.beginPath();
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i * Math.PI) / 4;
+                    const r = (i % 2 === 0) ? step / 2.2 : step / 3.5;
+                    const px = x + r * Math.cos(angle);
+                    const py = y + r * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(x, y, step / 6, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+    }
+
+    // --- 3. Pola Bunga (Renggang & Full Color) ---
+    function drawPolaBungaFull(val) {
+        const step = Math.max(45, 200 - val * 1.7); 
+        const radius = val * 0.6 + 8;
+
+        for (let x = step / 2; x <= canvas.width + step; x += step) {
+            for (let y = step / 2; y <= canvas.height + step; y += step) {
+                const petals = 6;
+                for (let i = 0; i < petals; i++) {
+                    const angle = (i * 2 * Math.PI) / petals;
+                    const px = x + Math.cos(angle) * radius * 0.8;
+                    const py = y + Math.sin(angle) * radius * 0.8;
+                    ctx.beginPath();
+                    ctx.arc(px, py, radius / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.save();
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(x, y, radius / 2.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+    }
+
+    // --- 4. Pola Geometris (Renggang & Full Color) ---
+    function drawPolaGeometrisFull(val) {
+        const step = Math.max(40, 180 - val * 1.5);
+        const size = val * 0.7 + 10;
+
+        for (let x = step / 2; x <= canvas.width + step; x += step) {
+            for (let y = step / 2; y <= canvas.height + step; y += step) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(Math.PI / 4);
+                ctx.fillRect(-size / 2, -size / 2, size, size);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-size / 4, -size / 4, size / 2, size / 2);
+                ctx.restore();
+            }
+        }
+    }
+
+    // --- 5. Setengah Lingkaran (Renggang & Full Color) ---
+    function drawPolaSetengahLingkaranFull(val) {
+        const step = Math.max(35, 170 - val * 1.4);
+        const r = val * 0.7 + 8;
+
+        for (let x = step / 2; x <= canvas.width + step; x += step) {
+            for (let y = step / 2; y <= canvas.height + step; y += step) {
+                ctx.beginPath();
+                ctx.arc(x, y, r, Math.PI, 2 * Math.PI, false);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.save();
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(x, y, r * 0.5, Math.PI, 2 * Math.PI, false);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+    }
+
+    // --- 6. Pola Daun (Renggang & Full Color) ---
+    function drawPolaDaunFull(val) {
+        const step = Math.max(45, 190 - val * 1.6);
+        const w = val * 0.5 + 8;
+        const h = val * 0.9 + 15;
+
+        for (let x = step / 2; x <= canvas.width + step; x += step) {
+            for (let y = step / 2; y <= canvas.height + step; y += step) {
+                for (let angle of [0, Math.PI / 2]) {
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(angle);
+
+                    ctx.beginPath();
+                    ctx.moveTo(0, -h / 2);
+                    ctx.bezierCurveTo(w, -h / 4, w, h / 4, 0, h / 2);
+                    ctx.bezierCurveTo(-w, h / 4, -w, -h / 4, 0, -h / 2);
+                    ctx.fill();
+
+                    ctx.restore();
+                }
+            }
+        }
+    }
+
+    // --- 7. Pola Titik (Renggang & Full Color) ---
+    function drawPolaTitikFull(val) {
+        const step = Math.max(25, 130 - val * 1.1);
+        const r = val * 0.3 + 3;
+
+        for (let x = step / 2; x <= canvas.width + step; x += step) {
+            for (let y = step / 2; y <= canvas.height + step; y += step) {
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(x, y, r * 1.6, 0, Math.PI * 2);
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+    }
+
+    // --- 8. Pola Spiral (Renggang & Full Color) ---
+    function drawPolaSpiralFull(val) {
+        const step = Math.max(45, 200 - val * 1.6);
+        const maxR = val * 0.7 + 10;
+
+        for (let x = step / 2; x <= canvas.width + step; x += step) {
+            for (let y = step / 2; y <= canvas.height + step; y += step) {
+                ctx.beginPath();
+                ctx.lineWidth = val * 0.1 + 2;
+                const turns = 2;
+                const b = maxR / (turns * Math.PI * 2);
+
+                for (let theta = 0; theta < turns * Math.PI * 2; theta += 0.1) {
+                    const r = b * theta;
+                    const px = x + r * Math.cos(theta);
+                    const py = y + r * Math.sin(theta);
+                    if (theta === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+    }
+
+    // --- 9. Pola Heksagonal (Renggang & Full Color) ---
+    function drawPolaHeksagonalFull(val) {
+        const step = Math.max(40, 180 - val * 1.5);
+        const r = val * 0.5 + 10;
+
+        for (let x = step / 2; x <= canvas.width + step; x += step) {
+            for (let y = step / 2; y <= canvas.height + step; y += step) {
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i * Math.PI) / 3;
+                    const hx = x + r * Math.cos(angle);
+                    const hy = y + r * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(hx, hy);
+                    else ctx.lineTo(hx, hy);
+                }
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.save();
+                ctx.fillStyle = '#fffefb';
+                ctx.beginPath();
+                ctx.arc(x, y, r * 0.4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+    }
+
+    // --- 10. Pola Simetri (Renggang & Full Color) ---
+    function drawPolaSimetriFull(val) {
+        const step = Math.max(50, 220 - val * 1.8);
+        const size = val * 0.6 + 10;
+
+        for (let x = step / 2; x <= canvas.width + step; x += step) {
+            for (let y = step / 2; y <= canvas.height + step; y += step) {
+                const petals = 8;
+                for (let i = 0; i < petals; i++) {
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate((i * 2 * Math.PI) / petals);
+
+                    ctx.beginPath();
+                    ctx.arc(size / 1.8, 0, size / 3, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.restore();
+                }
+
+                ctx.save();
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(x, y, size / 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+    }
+
+    // --- Fungsi Simpan JPG (Diperbaiki Kompatibilitasnya) ---
+    function saveAsJpg() {
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        // Memastikan warna latar belakang krem terisi penuh
+        tempCtx.fillStyle = '#fffefb';
+        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        tempCtx.drawImage(canvas, 0, 0);
+
+        // Ekspor menggunakan toBlob (Aman di GitHub Pages & Seluler)
+        tempCanvas.toBlob((blob) => {
+            if (!blob) return;
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'batik-fraktal.jpg';
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }, 'image/jpeg', 0.95);
+    }
+});
+</script>
+</body>
+</html>
